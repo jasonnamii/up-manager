@@ -2,6 +2,12 @@
 
 **User Preferences (UP) management pipeline.**
 
+## Prerequisites
+
+- **Obsidian Vault** — vault path referenced for machine-specific Cowork guidelines
+- **Desktop Commander MCP** — required for vault file reads/writes
+- **Claude Cowork or Claude Code** environment
+
 ## Goal
 
 up-manager provides a unified interface for managing all User Preferences settings. It handles the entire UP lifecycle: DSL editing, version bumping, path updates, QC validation, stability tracking, propagation, and reporting. English-only master (v29.0+).
