@@ -1,5 +1,7 @@
 # up-manager
 
+> 🇰🇷 [한국어 README](./README.ko.md)
+
 **User Preferences (UP) management pipeline.**
 
 ## Prerequisites
