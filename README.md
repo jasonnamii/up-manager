@@ -1,14 +1,37 @@
-# UP Manager
+# up-manager
 
-**User Preferences management with DSL editing and version control.**
+**User Preferences (UP) management pipeline.**
 
-DSL-based preferences file: edit → version bump → QC → propagate → before/after report. L1/L2 edits use fast path.
+## Goal
 
-### Example Prompts
+up-manager provides a unified interface for managing all User Preferences settings. It handles the entire UP lifecycle: DSL editing, version bumping, path updates, QC validation, stability tracking, propagation, and reporting. English-only master (v29.0+).
 
-```
-"Add a citation rule to my UP" → DSL edit→version bump→QC→propagate→report
-```
+## When & How to Use
+
+Trigger to add, modify, or manage preferences. L1/L2 quick edits use FAST_PATH for single-turn processing. Larger changes go through full pipeline.
+
+## Use Cases
+
+| Scenario | Prompt | What Happens |
+|---|---|---|
+| Quick edit | `"Add output format preference. L1."` | FAST_PATH: parse→validate→bump version→update paths→QC→report (1 turn) |
+| Major restructure | `"Reorganize workflow preferences."` | Full pipeline: edit→validate→bump→paths→stability→propagate→report |
+| Batch updates | `"Update 5 preferences across ecosystem."` | Parse all→validate→single version bump→QC→impact report |
+
+## Key Features
+
+- DSL editing with human-readable preference syntax
+- Automatic semantic version bumping (v29.0+)
+- Path management: auto-updates all references
+- QC validation for backward compatibility
+- Stability tracking across dependent systems
+- Ecosystem propagation to all dependent skills
+- FAST_PATH for L1/L2 single-turn edits
+
+## Works With
+
+- **[git-sync](https://github.com/jasonnamii/git-sync)** — commits version-bumped preferences to GitHub
+- **[session-briefing](https://github.com/jasonnamii/session-briefing)** — records preference changes for continuity
 
 ## Installation
 
@@ -26,7 +49,7 @@ Skills placed in `~/.claude/skills/` are automatically available in Claude Code 
 
 ## Part of Cowork Skills
 
-This is one of 25 custom skills. See the full catalog: [https://github.com/jasonnamii/cowork-skills](https://github.com/jasonnamii/cowork-skills)
+This is one of 25+ custom skills. See the full catalog: [github.com/jasonnamii/cowork-skills](https://github.com/jasonnamii/cowork-skills)
 
 ## License
 
