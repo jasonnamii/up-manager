@@ -32,15 +32,19 @@ CACHE_FIELDS:
   stability_path: UP_stability.md 절대경로
   current_version: 현재 버전 번호
   last_stability_snapshot: 직전 수정 후 stability 상태
+  cache_timestamp: 캐시 저장 시각
 
 LIFECYCLE:
-  첫 발동 → INIT 실행 → CACHE_FIELDS 저장
-  2회차↑ → CACHE_FIELDS 존재 확인 → 존재시 INIT 스킵, 캐시값 사용
+  첫 발동 → INIT 실행 → CACHE_FIELDS 저장 (cache_timestamp 포함)
+  2회차↑ → CACHE_FIELDS 존재 확인 → 외부변경 감지(아래) → 존재시 INIT 스킵, 캐시값 사용
   버전 범프 완료 → current_version 갱신
 
 INVALIDATION:
   세션 종료 시 자동 소멸 (세션 컨텍스트 한정)
   형이 "INIT 다시" 명시 → 캐시 무효화 후 재탐색
+  외부변경 감지 시 → 캐시 무효화 + 재로드
+
+**외부변경 감지:** 캐시 사용 전 파일 mtime 비교. `stat -f %m` (macOS) 또는 `stat -c %Y` (Linux)로 UP 파일 수정시각 확인. 캐시 저장 시각보다 신규 → 캐시 무효화 + 재로드. mtime 확인 불가 환경 → 캐시 미사용, 매번 원본 로드.
 ```
 
 ---
@@ -97,7 +101,7 @@ TRIGGER ::= 아래 중 1개↑ 해당시 자동발동
 ```
 PIPE:
   턴1: [UP파일 읽기 ∥ stability파일 읽기]  ← 병렬 2호출
-  턴2: [수정 + changelog + 버전범프 + stability갱신 + grep QC]  ← 순차 의존이므로 1턴 내 직렬 처리
+  턴2: [수정 + changelog + 헤더갱신 + 버전범프 + stability갱신 + grep QC]  ← 순차 의존이므로 1턴 내 직렬 처리
   턴3: [전파판정 ∥ 보고=브리핑 통합저장]  ← 병렬 2호출
 
   SESSION_CACHE 존재 + stability 변동 없음 예상 → 턴1에서 stability 읽기 스킵 가능 → 실질 2턴
@@ -118,11 +122,12 @@ PARALLEL:
 SEQUENCE (단일 턴 내):
   ❶ UP 해당 규칙 수정
   ❷ changelog 행 추가
-  ❸ 파일명 버전 범프 (rename)
-  ❹ stability 해당 행 갱신 (frozen→stable 강등 등)
-  ❺ grep old 텍스트 잔존 확인 (QC ②)
-  ❻ DSL순도 확인 (QC ①) — 수정 내용을 눈으로 확인
-  ✗ QC는 위 ❺❻ 2항목만. 항목 추가·변형·재해석 금지. 보고에 QC:①✓②✓ 형식으로 기록.
+  ❸ 코드블록 헤더 `# UP vX.X` 버전 갱신
+  ❹ 파일명 버전 범프 (rename)
+  ❺ stability 해당 행 갱신 (frozen→stable 강등 등)
+  ❻ grep old 텍스트 잔존 확인 (QC ②)
+  ❼ DSL순도 확인 (QC ①) — 수정 내용을 눈으로 확인
+  ✗ QC는 위 ❻❼ 2항목만. 항목 추가·변형·재해석 금지. 보고에 QC:①✓②✓ 형식으로 기록.
 
   FAIL 시 → 즉시 수정 후 재검증. 턴 추가 ✗ (같은 턴 내 루프)
   SESSION_CACHE.current_version 갱신
@@ -191,7 +196,7 @@ EDIT_RULE:
 ### C. 버전
 
 ```
-Minor(내용수정): 파일명 버전 갱신 + changelog 행 추가. .9→.10
+Minor(내용수정): 파일명 버전 갱신 + 코드블록 헤더 `# UP vX.X` 갱신 + changelog 행 추가. .9→.10
 Major(구조변경): 이전→_archive/ + 새파일 v{M+1}.0
 CHANGELOG: "v{버전} | §{섹션} {변경요약 1줄}"
 ```
