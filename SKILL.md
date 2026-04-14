@@ -111,8 +111,8 @@ PIPE:
 
 ```
 PARALLEL:
-  ❶ UP 파일 읽기 (FS read_file)
-  ❷ UP_stability.md 읽기 (FS read_file)
+  ❶ UP 파일 읽기
+  ❷ UP_stability.md 읽기
   SESSION_CACHE에 stability 스냅샷 있으면 ❷ 스킵
 ```
 
@@ -139,7 +139,7 @@ SEQUENCE (단일 턴 내):
 PARALLEL (반드시 같은 턴에 2개 도구호출 동시 발행):
   ❶ 전파 판정 — 전파맵 조회 → 연쇄대상 리스트
   ❷ 보고=브리핑 통합 저장:
-     보고 텍스트를 구성한 뒤, 동일 텍스트를 브리핑 파일로 write_file
+     보고 텍스트를 구성한 뒤, 동일 텍스트를 브리핑 파일로 저장
      별도 구성 단계 없음 — 보고 포맷 = 브리핑 포맷
 
 전파 판정:
@@ -164,7 +164,7 @@ FORMAT (인라인 보고 + 브리핑 파일 공용):
 
 SAVE:
   인라인 → 형에게 직접 표시
-  파일 → @ref UP §B.④세션브리핑 PATH (YYMMDD-HHmm 포맷)으로 write_file
+  파일 → @ref UP §B.④세션브리핑 PATH (YYMMDD-HHmm 포맷)으로 저장
   2개를 별도로 구성하지 않음 — 동일 텍스트 1회 생성, 2곳에 출력
 ```
 
@@ -246,7 +246,7 @@ FORMAT:
   시스템프롬프트 변경시: 변경 섹션 코드블록 1개만 첨부
 
 SAVE: FAST_PATH 보고=브리핑 통합과 동일 방식.
-  인라인 표시 + 브리핑 파일 write_file. 동일 텍스트, 별도 구성 ✗.
+  인라인 표시 + 브리핑 파일 저장. 동일 텍스트, 별도 구성 ✗.
 ```
 
 ---
