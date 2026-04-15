@@ -3,7 +3,7 @@ name: up-manager
 description: |
   UP(User Preferences) 통합 관리. DSL수정→버전범프→경로갱신→QC→안정도갱신→전파→보고 1회실행. EN 단독 마스터(v29.0~). L1·L2 수정은 FAST_PATH로 1턴 일괄처리.
   P1: UP, UP수정, UP관리, 버전범프, user preferences. P2: 수정해줘, update, modify. P3: version bump, DSL edit. P5: Before/After.
-  NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→deliverable-engine 또는 직접수행).
+  NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→직접수행).
 ---
 
 # UP Manager
