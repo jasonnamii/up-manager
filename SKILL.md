@@ -43,7 +43,6 @@ SEVERITY:
   LOW : 표현 순화·동의어 교체 → 로그만 (사용자 출력 ✗, cry-wolf 방지)
 
 BYPASS: 사용자가 "본질 변경 확인함" 문자열 명시 → 1건 1회 허가 (세션 연속 ✗)
-        세션브리핑에 자동 기록 — 반복 BYPASS 누적 시 해당 규칙 재평가 플래그
 ```
 
 **상세 규정:** `→ references/invariant-guard.md 참조`
@@ -76,7 +75,7 @@ DETECT (영향 판정 로직):
 
 SKIP: L0_PATH (QC교정만, 의미 변경 없음) — 체크리스트 영향 없음으로 전면 스킵
 
-BYPASS: 사용자가 "체크리스트 스킵" 명시 → 1회 허가 (세션브리핑 기록)
+BYPASS: 사용자가 "체크리스트 스킵" 명시 → 1회 허가
 ```
 
 ---
@@ -156,9 +155,9 @@ TRIGGER ::= 아래 중 1개↑ 해당시 자동발동
 
 | 조건 | 경로 | 차이 |
 |------|------|------|
-| L1·L2 (맥락0~약) | **FAST_PATH** | 병렬 3턴 완결, 경량QC 2항목, 보고=브리핑 통합 |
+| L1·L2 (맥락0~약) | **FAST_PATH** | 병렬 3턴 완결, 경량QC 2항목, 인라인 보고 |
 | L3·L4 (맥락중~강) | **FULL_PATH** | 병렬화된 순차, 4항목 QC, 풀보고 |
-| L0 (QC교정) | **L0_PATH** | A만 실행, 버전·경로·전파·브리핑 스킵 |
+| L0 (QC교정) | **L0_PATH** | A만 실행, 버전·경로·전파 스킵 |
 
 ---
 
@@ -170,7 +169,7 @@ TRIGGER ::= 아래 중 1개↑ 해당시 자동발동
 PIPE:
   턴1: [UP파일 읽기 ∥ stability파일 읽기 ∥ 체크리스트 읽기]  ← 병렬 3호출
   턴2: [수정 + changelog + 헤더갱신 + 버전범프 + stability갱신 + grep QC + SCOPE_IMPACT 판정]  ← 순차 의존이므로 1턴 내 직렬 처리
-  턴3: [전파판정 ∥ 체크리스트 동기화 ∥ 보고=브리핑 통합저장]  ← 병렬 3호출
+  턴3: [전파판정 ∥ 체크리스트 동기화 ∥ 보고]  ← 병렬 3호출
 
   SESSION_CACHE 존재 + stability 변동 없음 예상 → 턴1에서 stability 읽기 스킵 가능 → 실질 2턴
   SCOPE_IMPACT=LOW → 턴3 체크리스트 동기화는 frontmatter version 1줄 Edit으로 경량화
@@ -206,7 +205,7 @@ SEQUENCE (단일 턴 내):
   SESSION_CACHE.current_version 갱신
 ```
 
-### 턴3: 전파 + 체크리스트 동기화 + 보고=브리핑 통합
+### 턴3: 전파 + 체크리스트 동기화 + 보고
 
 ```
 PARALLEL (반드시 같은 턴에 2~3개 도구호출 동시 발행):
@@ -215,9 +214,7 @@ PARALLEL (반드시 같은 턴에 2~3개 도구호출 동시 발행):
      HIGH·MID → Edit(UP_checklist.md) 영향 항목 + frontmatter `source`·`updated` 갱신
      LOW      → Edit(UP_checklist.md) frontmatter `source`·`updated` 1줄만 갱신
      SKIP 조건: L0_PATH · "체크리스트 스킵" 명시
-  ❸ 보고=브리핑 통합 저장:
-     보고 텍스트를 구성한 뒤, 동일 텍스트를 브리핑 파일로 저장
-     별도 구성 단계 없음 — 보고 포맷 = 브리핑 포맷
+  ❸ 보고 — 인라인 텍스트로 형에게 직접 표시 (파일 저장 없음)
 
 전파 판정:
   | 판정 | 조치 |
@@ -227,10 +224,10 @@ PARALLEL (반드시 같은 턴에 2~3개 도구호출 동시 발행):
   | 전파대상 0건 | "전파대상 없음" 1줄 |
 ```
 
-### 보고=브리핑 통합 포맷
+### 보고 포맷
 
 ```
-FORMAT (인라인 보고 + 브리핑 파일 공용):
+FORMAT (인라인 보고 전용):
   v{old} → v{new}
   Before/After 테이블 (변경위치·Before·After 3열)
   QC: ①✓ ②✓
@@ -240,10 +237,7 @@ FORMAT (인라인 보고 + 브리핑 파일 공용):
   시스템프롬프트: [변경부분 코드블록 또는 "스킵"]
   미결: [시스템프롬프트 복붙 등 후속 필요사항]
 
-SAVE:
-  인라인 → 형에게 직접 표시
-  파일 → @ref UP §B.④세션브리핑 PATH (YYMMDD-HHmm 포맷)으로 저장
-  2개를 별도로 구성하지 않음 — 동일 텍스트 1회 생성, 2곳에 출력
+SAVE: 인라인만. 형에게 직접 표시. 파일 저장 ✗.
 ```
 
 ---
@@ -254,7 +248,7 @@ L3·L4는 구조적 변경이므로 형 컨펌이 필요하다.
 
 ```
 PIPE:
-  IG(INVARIANT_GUARD) → A(수정) → C(버전범프) → [E(풀QC 4항목) ∥ S(stability 행 갱신)] → [F(전파맵 실행) ∥ D(경로 갱신+grep) ∥ K(체크리스트 동기화)] → G(보고=브리핑)
+  IG(INVARIANT_GUARD) → A(수정) → C(버전범프) → [E(풀QC 4항목) ∥ S(stability 행 갱신)] → [F(전파맵 실행) ∥ D(경로 갱신+grep) ∥ K(체크리스트 동기화)] → G(보고)
   RULE: IG HIGH·MID → 사용자 "본질 변경 확인함" 명시 전 A 차단 | E검증 실패 → A수정 복귀 (루프) | K는 SCOPE_IMPACT 판정 후 분기 실행
   ∥ = 병렬 실행 (독립 단계를 같은 턴에 동시 호출)
   ✗ 단계 이름·역할 변형 금지. IG·A~G·K 정의를 아래에서 정확히 따를 것.
@@ -321,10 +315,10 @@ PARALLEL:
       MID  → 영향 항목 After 제시 + Edit + frontmatter 갱신
       LOW  → frontmatter `source`·`updated` 1줄 Edit만 수행
     VERIFY: 체크리스트 frontmatter `source:` 필드가 신규 UP 파일명과 일치
-    SKIP: "체크리스트 스킵" BYPASS 명시 시 (세션브리핑 자동 기록)
+    SKIP: "체크리스트 스킵" BYPASS 명시 시
 ```
 
-### G. 보고=브리핑 통합
+### G. 보고
 
 ```
 FORMAT:
@@ -332,8 +326,7 @@ FORMAT:
   REASON: L3/L4는 게이트에서 Before/After를 이미 제시·합의 완료. 보고에서 중복출력 ✗.
   시스템프롬프트 변경시: 변경 섹션 코드블록 1개만 첨부
 
-SAVE: FAST_PATH 보고=브리핑 통합과 동일 방식.
-  인라인 표시 + 브리핑 파일 저장. 동일 텍스트, 별도 구성 ✗.
+SAVE: 인라인만. 형에게 직접 표시. 파일 저장 ✗.
 ```
 
 ---
@@ -344,11 +337,10 @@ SAVE: FAST_PATH 보고=브리핑 통합과 동일 방식.
 - **INIT 스킵 금지 (첫 발동):** 첫 발동에서 경로 확정 건너뛰면 파일 탐색 루프. SESSION_CACHE가 있을 때만 스킵 허용.
 - **SESSION_CACHE 과신 금지:** 캐시는 같은 세션 내에서만 유효. 형이 세션 밖에서 UP 파일을 직접 수정했을 가능성이 있으면 캐시를 무효화하고 INIT 재실행.
 - **병렬 호출 누락:** ∥로 표기된 단계를 직렬로 실행하면 속도 이점 소멸. 반드시 같은 턴에 복수 도구호출로 발행.
-- **보고=브리핑 불일치:** 보고 텍스트를 수정한 뒤 브리핑 파일에 다른 버전을 저장하면 불일치. 동일 텍스트 변수를 2곳에 출력하는 원칙 준수.
 - **Cowork 지침은 UP 관할 밖:** `Agent-Ops/Cowork Claude_v2.0.md`는 머신별 VAULT 경로만 보관하는 최소 파일. UP 수정 파이프라인 대상 아님. 변경 필요시 직접 수정.
 - **Stability 파일 경로 고정:** `Agent-Ops/UP_stability.md`. UP 파일과 동일 폴더. 경로 탐색 시도 불필요.
 - **L0은 S단계 스킵:** L0_PATH는 QC교정이므로 stability 갱신 대상 아님. S단계를 실행하면 불필요한 도구 호출.
-- **체크리스트 파일 경로 고정:** `Agent-Ops/UP_checklist.md`. UP 파일과 동일 폴더. 미존재 시 경고 + `session-briefing`에 "체크리스트 부재" 기록 후 스킵 (임의 생성 ✗).
+- **체크리스트 파일 경로 고정:** `Agent-Ops/UP_checklist.md`. UP 파일과 동일 폴더. 미존재 시 경고 후 스킵 (임의 생성 ✗).
 - **체크리스트 stale 방치:** UP 수정 후 CHECKLIST_SYNC 스킵 → 계기판이 엔진 미반영. HIGH·MID SCOPE_IMPACT 감지 시 스킵 = FAIL. LOW도 frontmatter `source` 갱신은 필수.
 - **SCOPE_IMPACT 오판 회피:** TOP5·FULL15 키워드 매치만으로 HIGH 단정 금지. 규칙 의미 변경 여부가 판정 기준. 표현만 다듬었으면 LOW.
 - **L0은 K단계도 스킵:** L0_PATH는 QC교정이므로 체크리스트 영향 없음. K단계 실행 = 불필요한 도구 호출.
