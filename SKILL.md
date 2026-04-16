@@ -4,6 +4,7 @@ description: |
   UP(User Preferences) 통합 관리 + 본질 기능 보호. DSL수정→INVARIANT_GUARD→버전범프→경로갱신→QC→안정도갱신→전파→보고 1회실행. KR 단독 마스터(v35.7~). L1·L2 수정은 FAST_PATH로 1턴 일괄처리.
   P1: UP, UP수정, UP관리, 본질기능, 버전범프, user preferences, 인버리언트, invariant guard. P2: 수정해줘, update, modify, 고쳐줘. P3: version bump, DSL edit, invariant protection. P5: Before/After.
   NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→직접수행).
+vault_dependency: HARD
 ---
 
 # UP Manager
