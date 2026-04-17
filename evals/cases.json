@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "skill": "up-manager",
+  "last_updated": "2026-04-17",
+  "cases": [
+    {
+      "case_id": "FAST-L2-hedge-add",
+      "category": "FAST_PATH",
+      "edit4_level": "L2",
+      "input": "UP M3.DENSITY에 hedge 단어 '~같아요' 추가해줘",
+      "expected": {
+        "path": "FAST_PATH",
+        "scope_impact": "MID",
+        "turns": 3,
+        "files_touched": [
+          "Agent-Ops/UP_user-preferences_v{N+1}.md",
+          "Agent-Ops/UP_stability.md",
+          "Agent-Ops/UP_checklist.md"
+        ],
+        "invariant_guard": "LOW (단어 추가, 엄격도 유지)",
+        "qc_items": ["①DSL순도", "②grep잔존"],
+        "version_bump": "minor (.N → .N+1)"
+      },
+      "failure_modes": [
+        "hedge 목록에 '~같아요' 중복 추가 (grep 미수행)",
+        "stability 파일 미갱신 (해당 행 변동 누락)",
+        "체크리스트 frontmatter source 미갱신"
+      ]
+    },
+    {
+      "case_id": "FULL-L3-module-add",
+      "category": "FULL_PATH",
+      "edit4_level": "L3",
+      "input": "UP에 새 모듈 M13 (IMAGE_CITE) 추가. 이미지 인용 시 출처 명시 규칙.",
+      "expected": {
+        "path": "FULL_PATH",
+        "scope_impact": "HIGH",
+        "gate": "Before/After + 사용자 컨펌 대기",
+        "files_touched": [
+          "Agent-Ops/UP_user-preferences_v{N+1}.md",
+          "Agent-Ops/UP_stability.md",
+          "Agent-Ops/UP_checklist.md"
+        ],
+        "invariant_guard": "LOW (신규 규칙, 기존 규칙 훼손 없음)",
+        "qc_items": ["①DSL순도", "②규칙보존", "③참조무결", "④DSL문법"],
+        "version_bump": "minor (T2 확장)",
+        "checklist_sync": "TOP5/FULL15 재분류 여부 판단 + 영향 시 Edit"
+      },
+      "failure_modes": [
+        "IG 선행 없이 A 직행",
+        "L3인데 Before/After 없이 바로 Edit",
+        "신규 모듈 M13 타이어 배정 누락 (T2인지 T3인지)",
+        "체크리스트 HIGH 미판정 → 동기화 스킵"
+      ]
+    },
+    {
+      "case_id": "L0-cosmetic-typo",
+      "category": "L0_PATH",
+      "edit4_level": "L0",
+      "input": "UP 오타 '자능도' → '확신도' 고쳐줘",
+      "expected": {
+        "path": "L0_PATH",
+        "scope_impact": "SKIP (의미 변경 없음)",
+        "files_touched": [
+          "Agent-Ops/UP_user-preferences_v{N+1}.md"
+        ],
+        "invariant_guard": "LOW 로그만",
+        "qc_items": ["①DSL순도"],
+        "version_bump": "minor (.N → .N+1, QC교정)",
+        "skipped_stages": ["S (stability)", "F (전파)", "D (경로)", "K (체크리스트)"]
+      },
+      "failure_modes": [
+        "L0임에도 전파·체크리스트 실행 (불필요 도구호출)",
+        "stability 갱신 시도 (L0 대상 아님)",
+        "IG HIGH 오판정 (오타는 표현 순화)"
+      ]
+    }
+  ],
+  "regression_check_command": "python scripts/validate.py ./",
+  "note": "UP 수정의 파급력이 크므로 회귀 방지용. 실제 실행이 아닌 expected vs actual 비교 체크리스트."
+}
