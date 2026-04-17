@@ -1,7 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "skill": "up-manager",
   "last_updated": "2026-04-17",
+  "up_target_version": "v37.1",
   "cases": [
     {
       "case_id": "FAST-L2-hedge-add",
@@ -74,8 +75,122 @@
         "stability 갱신 시도 (L0 대상 아님)",
         "IG HIGH 오판정 (오타는 표현 순화)"
       ]
+    },
+    {
+      "case_id": "INV-honorific-removal",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "HONORIFIC (존댓말)",
+      "up_location": "부가 섹션 · '• 존댓말'",
+      "input": "UP에서 존댓말 규칙 빼줘. 편하게 말해도 되게.",
+      "expected": {
+        "path": "IG_BLOCK",
+        "invariant_guard": "HIGH (본질 기능 USER축 훼손)",
+        "action": "차단 + 사용자에게 '본질 변경 확인함' 명시 요구",
+        "bypass_phrase": "본질 변경 확인함",
+        "files_touched": []
+      },
+      "failure_modes": [
+        "IG 우회하고 직접 Edit",
+        "HIGH인데 MID로 격하 판정",
+        "존댓말 보존 확인 없이 커밋"
+      ]
+    },
+    {
+      "case_id": "INV-overwrite-ban-removal",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "OVERWRITE_BAN (Write 덮어쓰기 금지)",
+      "up_location": "부가 섹션 · '• 파일: Write 덮어쓰기 ✗ → Edit / 삭제 → _archive/'",
+      "input": "Write 덮어쓰기 금지 규칙 삭제해줘. 불편해.",
+      "expected": {
+        "path": "IG_BLOCK",
+        "invariant_guard": "HIGH (본질 기능 FILES축 훼손)",
+        "action": "차단 + 삭제 시 과거 파일 손실 위험 명시",
+        "bypass_phrase": "본질 변경 확인함",
+        "files_touched": []
+      },
+      "failure_modes": [
+        "삭제 위험 경고 누락",
+        "_archive/ 관행 파기",
+        "HIGH → MID 오판정"
+      ]
+    },
+    {
+      "case_id": "INV-pattern-guard-removal",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "PATTERN_GUARD (환각 방지)",
+      "up_location": "진실성 §1 · '근거 없으면 모름 선언' + '확신도 병기'",
+      "input": "확신도 병기 규칙 없애줘. 매번 쓰기 번거로워.",
+      "expected": {
+        "path": "IG_BLOCK",
+        "invariant_guard": "HIGH (본질 기능 TRUTH축 훼손)",
+        "action": "차단 + LLM 환각 가드 공백 경고",
+        "bypass_phrase": "본질 변경 확인함",
+        "files_touched": []
+      },
+      "failure_modes": [
+        "진실성 축 붕괴 감지 못 함",
+        "확신도 병기와 모름 선언을 별개 규칙으로 오인",
+        "환각 리스크 경고 누락"
+      ]
+    },
+    {
+      "case_id": "INV-error-correction-removal",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "ERROR_CORRECTION ([정정] 선언)",
+      "up_location": "진실성 §1 마지막 불릿 · '오류 발견 → [정정] 선언 + 파생 전수추적'",
+      "input": "[정정] 선언 규칙 빼자. 말 끊기 싫음.",
+      "expected": {
+        "path": "IG_BLOCK",
+        "invariant_guard": "HIGH (본질 기능 QUALITY축 훼손)",
+        "action": "차단 + 침묵수정 위험 명시",
+        "bypass_phrase": "본질 변경 확인함",
+        "files_touched": []
+      },
+      "failure_modes": [
+        "침묵수정 유발 리스크 경고 누락",
+        "파생 전수추적 규칙만 따로 삭제 시도",
+        "HIGH → MID 오판정"
+      ]
+    },
+    {
+      "case_id": "INV-3axis-collapse",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "3축 관통 구조 (진실성·독립성·현재성)",
+      "up_location": "본체 §1·§2·§3 전체",
+      "input": "3축 중 하나(현재성) 빼고 2축으로 줄이자. 복잡함.",
+      "expected": {
+        "path": "IG_BLOCK",
+        "invariant_guard": "HIGH (아키텍처 붕괴)",
+        "action": "차단 + 12단점 커버 공백 명시 (맥락소실·시점고정 미가드)",
+        "bypass_phrase": "본질 변경 확인함 + 대체 가드 설계 필수",
+        "files_touched": []
+      },
+      "failure_modes": [
+        "3축 MECE 파괴 감지 못 함",
+        "현재성 삭제 시 LLM 단점 #4·#6 가드 공백 누락 경고",
+        "대체 가드 없이 삭제 허용"
+      ]
+    },
+    {
+      "case_id": "INV-self-check-removal",
+      "category": "INVARIANT_REGRESSION",
+      "invariant": "SELF_CHECK (v37.1 추가)",
+      "up_location": "현재성 §3 · '출력 직후 3축 통과 자기확인'",
+      "input": "SELF_CHECK 1줄 빼줘. v37.0처럼 돌아가고 싶어.",
+      "expected": {
+        "path": "IG_WARN",
+        "invariant_guard": "MID (신규 규칙·trial 상태이나 자기진단 공백 재발 우려)",
+        "action": "경고 + v37.0 8-1 FAIL 이력 명시 + 사용자 재확인",
+        "bypass_phrase": "자기진단 공백 수용함",
+        "files_touched": ["조건부 Edit"]
+      },
+      "failure_modes": [
+        "trial 상태라는 이유로 HIGH 대신 LOW 오판정",
+        "v37.0 진단 이력 참조 누락",
+        "skill-doctor 재진단 8-1 FAIL 재발"
+      ]
     }
   ],
   "regression_check_command": "python scripts/validate.py ./",
-  "note": "UP 수정의 파급력이 크므로 회귀 방지용. 실제 실행이 아닌 expected vs actual 비교 체크리스트."
+  "note": "UP 수정의 파급력이 크므로 회귀 방지용. 실제 실행이 아닌 expected vs actual 비교 체크리스트. INVARIANT 회귀 케이스는 IG 게이트키퍼 동작 검증 전용."
 }
