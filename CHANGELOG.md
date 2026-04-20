@@ -1,5 +1,24 @@
 # up-manager CHANGELOG
 
+## v2.1 — 2026-04-21
+
+**계기:** UP v39.1 DSL 영문화 대응. DSL_LANG 정책 명시화 + KR↔EN 글로서리 추가 + INVARIANT_GUARD 확장.
+
+### 신규 파일
+- `references/dsl-lang-policy.md` — DSL 언어 정책 (DSL_LANG=EN, PROPER_NOUN 보존, CHANGELOG=KR 허용)
+- `references/dsl-glossary.md` — KR↔EN 양방향 용어집 (축명·키워드·변수·섹션 매핑)
+
+### 업데이트
+- `SKILL.md` — DSL_LANG=EN 마스터 선언, 핵심 규칙 6개 표, description P1·P3 키워드 확장 (DSL_LANG, 영문DSL, DSL language policy 등), 스포크 목록 갱신
+- `references/invariant-guard.md` — MECE 5축 → 6축 확장 (⑥ DSL_LANG 신설), DETECT 3중 검사 → 4중 (축명 한글화·고유명사 로마자화·DSL 기호 제거 감지)
+
+### 하위호환
+- 기존 파이프라인(FAST_PATH/FULL_PATH/CHECKLIST_SYNC) 무변경
+- INVARIANT_GUARD 로직 동일, 검사 항목만 확장
+- KR UP도 진단 가능 (글로서리로 역매핑)
+
+---
+
 ## v2.0 — 2026-04-17
 
 **계기:** skill-doctor 진단 🟠 66.4 → 🟢 목표 85+ 처방 이행.
