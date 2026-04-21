@@ -8,11 +8,14 @@
 
 | 필드 | 내용 |
 |------|------|
-| `up_path` | INIT에서 확정한 UP 파일 절대경로 |
+| `up_path` | INIT에서 확정한 개인 UP 파일 절대경로 |
 | `stability_path` | UP_stability.md 절대경로 |
 | `checklist_path` | UP_checklist.md 절대경로 |
-| `current_version` | 현재 버전 번호 |
+| `up_team_path` | 팀공유 UP 파일 절대경로 (부재 시 None, v2.2~) |
+| `current_version` | 현재 개인 UP 버전 번호 |
+| `up_team_version` | 현재 팀 UP 버전 번호 (v2.2~) |
 | `last_stability_snapshot` | 직전 수정 후 stability 상태 |
+| `last_team_sync_timestamp` | 직전 TEAM_SYNC 실행 시각 (v2.2~) |
 | `cache_timestamp` | 캐시 저장 시각 |
 
 ---

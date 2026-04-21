@@ -40,10 +40,11 @@ SESSION_CACHE.up_path 존재?
 
 ```
 Agent-Ops/ 디렉토리를 탐색 → UP_user-preferences_v*.md 파일명 확정
-  → 동시에 UP_stability.md, UP_checklist.md 경로도 확정
-  → SESSION_CACHE에 저장
+  → 동시에 UP_stability.md, UP_checklist.md, UP_team_v*.md 경로도 확정
+  → SESSION_CACHE에 저장 (up_path, stability_path, checklist_path, up_team_path)
 
 RULE: 이후 파이프라인 전체에서 확정 경로를 재사용. 재탐색 ✗
+TEAM_UP: UP_team_v*.md 부재 시 up_team_path=None 저장 → TEAM_SYNC 단계에서 전면 스킵
 ```
 
 ---
@@ -58,6 +59,8 @@ RULE: 이후 파이프라인 전체에서 확정 경로를 재사용. 재탐색 
 | UP_checklist.md 부재 | 경고 1줄 후 진행, K단계 자동 스킵 (임의 생성 ✗) |
 | 사용자 빈 입력 | STOP + "수정 내용을 명시해주세요" 1줄 |
 | 사용자가 볼트 외부 파일 경로 제시 | STOP + "UP 본체는 Agent-Ops/ 하위만 대상" 안내 |
+| UP_team_v*.md 부재 | 경고 1줄 후 `up_team_path=None` 저장. TEAM_SYNC 전면 스킵 |
+| UP_team_v*.md 2건+ | 버전 최고값 1개 선택 + 보고 "복수 팀 버전 감지: [목록]" |
 
 ---
 

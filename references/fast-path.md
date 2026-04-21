@@ -10,10 +10,11 @@
 턴1: [UP파일 읽기 ∥ stability파일 읽기 ∥ 체크리스트 읽기]  ← 병렬 3호출
 턴2: [수정 + changelog + 헤더갱신 + 버전범프 + stability갱신 + grep QC + SCOPE_IMPACT 판정]
        ← 순차 의존이므로 1턴 내 직렬 처리
-턴3: [전파판정 ∥ 체크리스트 동기화 ∥ 보고]  ← 병렬 3호출
+턴3: [전파판정 ∥ 체크리스트 동기화 ∥ TEAM_SYNC ∥ 보고]  ← 병렬 4호출
 
 SESSION_CACHE 존재 + stability 변동 없음 예상 → 턴1에서 stability 읽기 스킵 가능 → 실질 2턴
 SCOPE_IMPACT=LOW → 턴3 체크리스트 동기화는 frontmatter version 1줄 Edit으로 경량화
+TEAM_SYNC: up_team_path=None 또는 "팀싱크 스킵" BYPASS 또는 공통분 0건 → 스킵
 ```
 
 ---
@@ -53,16 +54,19 @@ SEQUENCE:
 
 ---
 
-## 턴3: 전파 + 체크리스트 동기화 + 보고 (병렬)
+## 턴3: 전파 + 체크리스트 동기화 + TEAM_SYNC + 보고 (병렬)
 
 ```
-PARALLEL (반드시 같은 턴에 2~3개 도구호출 동시 발행):
+PARALLEL (반드시 같은 턴에 2~4개 도구호출 동시 발행):
   ❶ 전파 판정 — 전파맵 조회 → 연쇄대상 리스트
   ❷ 체크리스트 동기화 — SCOPE_IMPACT 분기:
      HIGH·MID → Edit(UP_checklist.md) 영향 항목 + frontmatter `source`·`updated` 갱신
      LOW      → Edit(UP_checklist.md) frontmatter `source`·`updated` 1줄만 갱신
      SKIP 조건: L0_PATH · "체크리스트 스킵" 명시
-  ❸ 보고 — 인라인 텍스트로 사용자에게 직접 표시 (파일 저장 없음)
+  ❸ TEAM_SYNC — 팀 UP 동기화 (references/team-sync.md)
+     STEP 1~8 실행 (경로→diff→PERSONAL_FILTER→역방향IG→Edit→범프→QC→보고)
+     SKIP 조건: up_team_path=None · "팀싱크 스킵" BYPASS · L0_PATH · 공통분 0건
+  ❹ 보고 — 인라인 텍스트로 사용자에게 직접 표시 (파일 저장 없음)
 ```
 
 ### 전파 판정 표
@@ -84,6 +88,7 @@ QC: ①✓ ②✓
 stability: [변동사항 또는 "변동 없음"]
 전파: [대상 또는 "없음"]
 체크리스트: [SCOPE_IMPACT + 동기화 여부 또는 "영향 없음"]
+팀싱크: [팀 v{old}→v{new} + 공통분 N건 + 제외 목록 또는 "스킵(사유)"]
 시스템프롬프트: [변경부분 코드블록 또는 "스킵"]
 미결: [시스템프롬프트 복붙 등 후속 필요사항]
 

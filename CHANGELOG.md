@@ -1,5 +1,33 @@
 # up-manager CHANGELOG
 
+## v2.2 — 2026-04-21
+
+**계기:** 팀공유 UP(`UP_team_v*.md`) 자동 동기화 요구. 개인 UP 수정 시 공통 규칙만 팀에 전파, 개인 커스텀(호칭·고유명사·PERSONAL 마커)은 제외.
+
+### 신규 파일
+- `references/team-sync.md` — TEAM_SYNC 파이프라인 8단계 + PERSONAL_FILTER 3축(HONORIFIC·PROPER_NOUN·PERSONAL_MARKER) + 역방향 INVARIANT_GUARD
+
+### 업데이트
+- `SKILL.md` — description에 팀공유 UP 관련 키워드 확장(팀공유UP, UP_team, team sync, 팀싱크, PERSONAL_FILTER). 판정 흐름에 TEAM_SYNC 단계 추가. Gotchas 3건 추가. version 2.1→2.2
+- `references/init-protocol.md` — STEP 2에 `up_team_path` 확정 로직 추가. EDGE CASES에 팀 UP 부재·복수건 처리 추가
+- `references/invariant-guard.md` — MECE 6축 → 7축 확장(⑦ TEAM_UP_PURITY 신설). DETECT 4중 → 5중(⑤ PERSONAL_FILTER 역방향). Gotchas 2건 추가
+- `references/session-cache.md` — CACHE_FIELDS에 `up_team_path`·`up_team_version`·`last_team_sync_timestamp` 추가
+- `references/fast-path.md` — 턴3 병렬 호출에 TEAM_SYNC 추가(3호출 → 4호출). 보고 포맷에 팀싱크 필드
+- `references/full-path.md` — F+D+K 병렬 → F+D+K+T 병렬. T. TEAM_SYNC 섹션 신설. G단계 보고 포맷에 팀싱크 필드
+
+### 설계 원칙
+- **버전 독립:** 팀 UP 버전은 개인과 무관 범프 (개인 v39.2 ↔ 팀 v12.5 정상)
+- **자동 실행(A모드):** 개인 UP 파이프라인 완료 후 자동 TEAM_SYNC. BYPASS "팀싱크 스킵" 1회 허가
+- **PERSONAL_FILTER 3축:** ①HONORIFIC(호칭) ②PROPER_NOUN(개인 고유명사) ③PERSONAL_MARKER(`<!-- PERSONAL -->` 블록)
+- **역방향 IG:** 팀 UP Edit 시 ⑤ PERSONAL_FILTER 검사로 개인 커스텀 역유입 차단
+
+### 하위호환
+- 팀 UP 부재 시 전면 스킵 (기존 사용자 영향 ✗)
+- 개인 UP 단독 수정 시 동작 기존과 동일
+- CHECKLIST_SYNC·FAST_PATH·FULL_PATH 기본 로직 무변경 (단계만 1개 추가)
+
+---
+
 ## v2.1 — 2026-04-21
 
 **계기:** UP v39.1 DSL 영문화 대응. DSL_LANG 정책 명시화 + KR↔EN 글로서리 추가 + INVARIANT_GUARD 확장.
