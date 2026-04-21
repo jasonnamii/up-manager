@@ -44,6 +44,12 @@ Major(구조변경):
   이전 → _archive/
   새파일 v{M+1}.0
 
+CODEBLOCK_WRAP (필수, 모든 범프에 공통):
+  DSL 본문은 4-backtick(````) 코드블록으로 래핑 (v40.5 원칙 상시 유지)
+  파일 첫 줄=```` / DSL 본문 종료 직후 닫는 ```` / changelog는 래핑 밖
+  미래핑·3-backtick 래핑 감지 시 자동 보정 (사용자 확인 ✗)
+  E단계 QC ⑤에서 최종 게이트 검증
+
 CHANGELOG: "v{버전} | §{섹션} {변경요약 1줄}"
 ```
 
@@ -65,8 +71,10 @@ PARALLEL:
 | ② | 규칙보존: 원본 모든 규칙 수정본에 존재 |
 | ③ | 참조무결: @ref 대상 실재 (grep) |
 | ④ | DSL문법: 신규/수정 규칙 구문사양 준수 |
+| ⑤ | CODEBLOCK_WRAP: DSL 본문 4-backtick 래핑 무결 (v40.5 원칙) |
 
-✗ 이 4항목만. 항목 추가·변형·재해석 금지. 보고에 QC:①~④✓ 형식으로 기록.
+✗ 이 5항목만. 항목 추가·변형·재해석 금지. 보고에 QC:①~⑤✓ 형식으로 기록.
+⑤는 미통과 시 자동 보정 → 재검증 (사용자 확인 ✗).
 
 ### S. 안정도 갱신 규칙
 
@@ -140,11 +148,13 @@ STEP 1~8: references/team-sync.md §PIPE 준수
   7. 팀 UP QC (grep old + PERSONAL_FILTER 최종)
   8. 결과 G단계 보고에 포함
 
-SKIP 조건:
+SKIP 조건 (축소):
   - up_team_path=None (팀 UP 부재)
-  - "팀싱크 스킵" BYPASS
   - L0_PATH (QC 교정만)
-  - 공통분 0건 (전부 개인 커스텀)
+  - PERSONAL_FILTER 통과분 0건 (전부 개인 커스텀)
+
+✗ "팀싱크 스킵" BYPASS 비활성 · 사용자 재확인 요청 금지
+기본 AUTO · 공통분 ≥1건이면 무조건 실행
 
 상세: `→ references/team-sync.md`
 ```

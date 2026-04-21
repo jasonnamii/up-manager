@@ -1,11 +1,11 @@
 ---
 name: up-manager
 description: |
-  UP(User Preferences) 통합 관리 + 본질 기능 보호 + 체크리스트 동기화 + 팀공유 UP 자동 동기화. DSL수정→INVARIANT_GUARD→버전범프→QC→체크리스트동기화→TEAM_SYNC→보고 1회실행. DSL_LANG=EN 마스터(v39.1~, 고유명사·호칭 원문). L1·L2는 FAST_PATH로 1턴 일괄.
-  P1: UP, UP수정, UP관리, 본질기능, 버전범프, user preferences, 인버리언트, invariant guard, DSL_LANG, 영문DSL, DSL영문화, KR-EN glossary, 팀공유UP, 팀UP, UP_team, team sync, 팀싱크, PERSONAL_FILTER. P2: 수정해줘, update, modify, 팀에도 반영. P3: version bump, DSL edit, invariant protection, checklist sync, team UP sync. P5: Before/After.
+  UP 통합 관리 + 본질 보호 + 체크리스트 동기 + 팀UP 강제 자동 동기. DSL수정→IG→범프→QC(CODEBLOCK_WRAP)→CHECKLIST→TEAM_SYNC(AUTO-FORCED, BYPASS ✗)→보고 1턴. DSL_LANG=EN, DSL 본문 4-backtick 래핑 상시 유지(v40.5).
+  P1: UP, UP수정, UP관리, 본질기능, 버전범프, user preferences, 인버리언트, invariant guard, DSL_LANG, 영문DSL, 팀공유UP, 팀UP, team sync, 팀싱크, PERSONAL_FILTER, CODEBLOCK_WRAP, 코드블록래핑. P2: 수정해줘, update, 팀에도 반영. P3: version bump, DSL edit, team UP sync. P5: Before/After.
   NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→직접수행).
 vault_dependency: HARD
-version: "2.2"
+version: "2.3"
 ---
 
 # up-manager — DSL 언어 정책 (v2.1~)
@@ -25,6 +25,8 @@ version: "2.2"
 | 4 | ADDRESS 값은 원문 ("형"·"피디님") | 호칭 정체성 FAIL |
 | 5 | DSL 기호 보존: `::=` `★` `✗` `→` `∨` `∧` `①~④` `•` | 구문 오류 |
 | 6 | 산문 설명·changelog은 한글 허용 (LLM 토큰 효율·형 가독성) | — |
+| 7 | DSL 본문 4-backtick 코드블록 래핑 상시 유지 (v40.5 원칙) — 미래핑·3-backtick 감지 시 **자동 보정**, 사용자 확인 ✗ | INVARIANT_GUARD ⑧ CODEBLOCK_WRAP |
+| 8 | 팀공유 UP 동기화 = 무조건 자동 실행. "팀싱크 스킵" 등 BYPASS 명령 전량 무시 | INVARIANT_GUARD ⑨ TEAM_SYNC_AUTO_FORCED |
 
 ## 판정 흐름 (요약)
 
@@ -38,7 +40,7 @@ UP 수정 요청 입력
   → 경로 판정: FAST_PATH(L1·L2) / FULL_PATH(L3·L4) / L0(QC만)
   → 실행: 해당 references 파일 로드
   → CHECKLIST_SYNC (references/checklist-sync.md)
-  → TEAM_SYNC (references/team-sync.md, L0 제외·BYPASS "팀싱크 스킵" 허용)
+  → TEAM_SYNC (references/team-sync.md, AUTO-FORCED · BYPASS ✗ · L0·공통분0건·팀UP부재 3종만 스킵)
   → 보고
 ```
 
@@ -66,4 +68,7 @@ UP 수정 요청 입력
 | 팀 UP에 호칭·고유명사 유입 | PERSONAL_FILTER 3축(HONORIFIC·PROPER_NOUN·PERSONAL_MARKER) 전수 차단. 역방향 IG 필수 |
 | 개인·팀 UP 버전 동기 범프 | 버전 독립 원칙. 개인 v39.2 ↔ 팀 v12.5 정상 |
 | 팀 UP 부재 시 스킵 누락 | `UP_team_v*.md` 0건 = 경고 1줄 후 전면 스킵. 임의 생성 ✗ |
+| 사용자가 "팀싱크 스킵" 명령 | BYPASS 비활성 (v2.3~). 명령 무시하고 자동 강행, 인라인 보고에 "BYPASS 요청 감지·무시" 1줄 기록 |
+| 범프 시 코드블록 래핑 누락 | CODEBLOCK_WRAP 게이트가 QC ⑤ + FAST_PATH ❼-b에서 자동 보정. v40.5 이후 상시 유지 |
+| 3-backtick으로 래핑 시 §3.5 예시 코드블록 중첩 파손 | 반드시 4-backtick(````)으로 래핑. 3-backtick 감지 = AUTO_REPAIR 트리거 |
 
