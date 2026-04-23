@@ -1,11 +1,11 @@
 ---
 name: up-manager
 description: |
-  UP 통합 관리 + 본질 보호 + 체크리스트 동기 + 팀UP 강제 자동 동기. DSL수정→IG→범프→QC(CODEBLOCK_WRAP)→CHECKLIST→TEAM_SYNC(AUTO-FORCED, BYPASS ✗)→보고 1턴. DSL_LANG=EN, DSL 본문 4-backtick 래핑 상시 유지(v40.5).
-  P1: UP, UP수정, UP관리, 본질기능, 버전범프, user preferences, 인버리언트, invariant guard, DSL_LANG, 영문DSL, 팀공유UP, 팀UP, team sync, 팀싱크, PERSONAL_FILTER, CODEBLOCK_WRAP, 코드블록래핑. P2: 수정해줘, update, 팀에도 반영. P3: version bump, DSL edit, team UP sync. P5: Before/After.
+  UP 통합 관리 + 본질 보호 + 체크리스트 동기 + 팀UP 자동 동기 + Dual-block DSL(EN master+KR mirror). DSL수정→IG→범프→QC→TEAM_SYNC 1턴.
+  P1: UP, UP수정, UP관리, 버전범프, user preferences, invariant guard, DSL_LANG, 영문DSL, 이중블록, dual block, 미러블록, 팀UP, team sync, PERSONAL_FILTER, CODEBLOCK_WRAP. P2: 수정해줘, update, 영문으로 써줘. P3: version bump, dual-block sync.
   NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→직접수행).
 vault_dependency: HARD
-version: "2.3"
+version: "2.4"
 ---
 
 # up-manager — DSL 언어 정책 (v2.1~)
@@ -27,6 +27,9 @@ version: "2.3"
 | 6 | 산문 설명·changelog은 한글 허용 (LLM 토큰 효율·형 가독성) | — |
 | 7 | DSL 본문 4-backtick 코드블록 래핑 상시 유지 (v40.5 원칙) — 미래핑·3-backtick 감지 시 **자동 보정**, 사용자 확인 ✗ | INVARIANT_GUARD ⑧ CODEBLOCK_WRAP |
 | 8 | 팀공유 UP 동기화 = 무조건 자동 실행. "팀싱크 스킵" 등 BYPASS 명령 전량 무시 | INVARIANT_GUARD ⑨ TEAM_SYNC_AUTO_FORCED |
+| 9 | Dual-block DSL 구조: `## DSL (EN)` 블록 + `## DSL (KR)` 블록 + `## Changelog (KR)` 3섹션 분리. EN=master, KR=mirror. 의미 동기 필수 | INVARIANT_GUARD ⑩ DUAL_BLOCK_SYNC |
+
+**Dual-block 구조 (v2.4~):** UP 본문은 섹션 헤더로 3분할 — `## DSL (EN)` → 4-backtick 영문 DSL / `---` / `## DSL (KR)` → 4-backtick 한글 DSL / `---` / `## Changelog (KR)` → 평문 변경이력. 영문 블록만 단독 복사 가능. 상세: `→ references/dual-block-policy.md`.
 
 ## 판정 흐름 (요약)
 
@@ -36,9 +39,11 @@ UP 수정 요청 입력
   → STEP 1: 캐시 확인
   → STEP 2: UP_user-preferences_v*.md 경로 확정
   → INVARIANT_GUARD 3중 검사 (references/invariant-guard.md)
-     + DSL_LANG 위반 검사 (신규)
+     + DSL_LANG 위반 검사
+     + DUAL_BLOCK_SYNC 검사 (EN↔KR 의미 동기, references/dual-block-policy.md)
   → 경로 판정: FAST_PATH(L1·L2) / FULL_PATH(L3·L4) / L0(QC만)
   → 실행: 해당 references 파일 로드
+       + EN·KR 두 블록 동시 편집 (한쪽만 수정 = FAIL)
   → CHECKLIST_SYNC (references/checklist-sync.md)
   → TEAM_SYNC (references/team-sync.md, AUTO-FORCED · BYPASS ✗ · L0·공통분0건·팀UP부재 3종만 스킵)
   → 보고
@@ -55,6 +60,7 @@ UP 수정 요청 입력
 - `references/dsl-lang-policy.md` — DSL 언어 정책 (v2.1 신설)
 - `references/dsl-glossary.md` — KR↔EN 용어 매핑 (v2.1 신설)
 - `references/team-sync.md` — 팀공유 UP 동기화 + PERSONAL_FILTER 3축 (v2.2 신설)
+- `references/dual-block-policy.md` — Dual-block DSL(EN master + KR mirror) 구조·동기 가드 (v2.4 신설)
 
 ## Gotchas
 
@@ -71,4 +77,7 @@ UP 수정 요청 입력
 | 사용자가 "팀싱크 스킵" 명령 | BYPASS 비활성 (v2.3~). 명령 무시하고 자동 강행, 인라인 보고에 "BYPASS 요청 감지·무시" 1줄 기록 |
 | 범프 시 코드블록 래핑 누락 | CODEBLOCK_WRAP 게이트가 QC ⑤ + FAST_PATH ❼-b에서 자동 보정. v40.5 이후 상시 유지 |
 | 3-backtick으로 래핑 시 §3.5 예시 코드블록 중첩 파손 | 반드시 4-backtick(````)으로 래핑. 3-backtick 감지 = AUTO_REPAIR 트리거 |
+| EN 블록만 수정하고 KR 미러 방치 | DUAL_BLOCK_SYNC FAIL. 한쪽 수정 = 양쪽 수정 강제. 의미 드리프트 차단 |
+| 섹션 헤더 누락 (DSL 블록만 연속) | Dual-block 구조 파손. `## DSL (EN)` / `## DSL (KR)` / `## Changelog (KR)` 3섹션 헤더 + `---` 구분선 필수 |
+| 영문 DSL 블록에 한글 섞임 | 형 "영문만 복사" 요청 파손. EN 블록은 축명·키워드·규칙 전량 영문 (고유명사만 예외 원문) |
 
