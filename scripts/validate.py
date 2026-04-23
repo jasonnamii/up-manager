@@ -27,9 +27,7 @@ REQUIRED_SPOKES = [
     "invariant-guard.md",
     "session-cache.md",
     "init-protocol.md",
-    "fast-path.md",
-    "full-path.md",
-    "checklist-sync.md",
+    "pipeline.md",
 ]
 INVARIANT_MIN = 6
 
@@ -82,7 +80,7 @@ def check_evals(skill_dir: Path) -> dict:
         if not cases:
             return {"name": "evals", "status": "FAIL",
                     "evidence": "cases 배열 비어있음"}
-        required_keys = {"case_id", "category", "edit4_level", "input", "expected"}
+        required_keys = {"case_id", "category", "input", "expected"}  # edit4_level 제거 v2.5~
         for c in cases:
             missing = required_keys - set(c.keys())
             if missing:

@@ -2,6 +2,8 @@
 
 같은 세션에서 UP 2회 이상 수정 시, 매번 INIT부터 재실행하면 도구호출이 중복된다. 첫 발동에서 확정한 상태를 캐싱하여 2회차부터 INIT을 스킵한다.
 
+**v2.5~ 변경:** `stability_path`·`checklist_path`·`last_stability_snapshot` 필드 제거. UP 본체 + 팀 UP 경로만 캐싱.
+
 ---
 
 ## CACHE_FIELDS
@@ -9,13 +11,10 @@
 | 필드 | 내용 |
 |------|------|
 | `up_path` | INIT에서 확정한 개인 UP 파일 절대경로 |
-| `stability_path` | UP_stability.md 절대경로 |
-| `checklist_path` | UP_checklist.md 절대경로 |
-| `up_team_path` | 팀공유 UP 파일 절대경로 (부재 시 None, v2.2~) |
+| `up_team_path` | 팀공유 UP 파일 절대경로 (부재 시 None) |
 | `current_version` | 현재 개인 UP 버전 번호 |
-| `up_team_version` | 현재 팀 UP 버전 번호 (v2.2~) |
-| `last_stability_snapshot` | 직전 수정 후 stability 상태 |
-| `last_team_sync_timestamp` | 직전 TEAM_SYNC 실행 시각 (v2.2~) |
+| `up_team_version` | 현재 팀 UP 버전 번호 |
+| `last_team_sync_timestamp` | 직전 TEAM_SYNC 실행 시각 |
 | `cache_timestamp` | 캐시 저장 시각 |
 
 ---
@@ -25,7 +24,7 @@
 ```
 첫 발동 → INIT 실행 → CACHE_FIELDS 저장 (cache_timestamp 포함)
 2회차↑ → CACHE_FIELDS 존재 확인 → 외부변경 감지 → 존재·미변경시 INIT 스킵, 캐시값 사용
-버전 범프 완료 → current_version 갱신
+버전 범프 완료 → current_version 갱신 (또는 팀 UP 범프 시 up_team_version)
 ```
 
 ---
@@ -58,3 +57,4 @@ mtime 확인 불가 환경 → 캐시 미사용, 매번 원본 로드.
 | 캐시 과신 | 같은 세션 내에서만 유효. 세션 밖 UP 수정 가능성 있으면 INIT 재실행 |
 | mtime 비교 생략 | 외부 수정 미감지 → 구 버전으로 Edit → 충돌. 반드시 비교 선행 |
 | STEP 0 마운트 확인까지 스킵 | STEP 1·2는 스킵 가능, STEP 0은 항상 선행 |
+| stability·checklist 필드 복원 시도 | v2.5~ 제거. 해당 파일 운용 자체가 폐기됨 |

@@ -1,5 +1,45 @@
 # up-manager CHANGELOG
 
+## v2.5 — 2026-04-23
+
+**계기:** 형 요청 — 체크리스트·스태빌리티 파일 운용 중단. 파이프라인 분기·루프 제거(뺑뺑이 방지).
+
+### 제거
+- `references/checklist-sync.md` → `_archive/v2.4/` (UP_checklist.md 동기화 전량 폐기)
+- `references/fast-path.md` → `_archive/v2.4/` (L1·L2 분기 폐기)
+- `references/full-path.md` → `_archive/v2.4/` (L3·L4 분기 폐기)
+- SCOPE_IMPACT(HIGH/MID/LOW) 판정 로직 제거
+- L0/L1/L2/L3/L4 edit4_level 분기 제거
+- UP_stability.md 읽기·갱신 로직 제거 (fast/full-path)
+- UP_checklist.md 읽기·갱신 로직 제거 (fast/full-path)
+- 풀QC 5항목(①DSL순도·②규칙보존·③참조무결·④DSL문법·⑤WRAP) → **2항목+WRAP 게이트**로 압축
+- SESSION_CACHE `stability_path`·`checklist_path`·`last_stability_snapshot` 필드 제거
+- INVARIANT_GUARD "세션당 BYPASS 3회 이상 → stability 파일 플래그" → 인라인 제안 1줄로 대체
+
+### 신규
+- `references/pipeline.md` — 단방향 선형 파이프라인 (①INIT → ②IG → ③EDIT → ④QC → ⑤TEAM_SYNC → ⑥REPORT)
+
+### 업데이트
+- `SKILL.md` — description에서 "체크리스트 동기" 제거. 핵심 규칙 9개 → 8개 (4/5번 통합). 판정 흐름을 단방향 선형 파이프라인으로 전면 교체. 스포크 목록에서 checklist-sync·fast-path·full-path 제거 + pipeline.md 추가. INVARIANT 마커(#1~#8) 본문 표기. version 2.4→2.5
+- `references/init-protocol.md` — STEP 2에서 UP_stability.md·UP_checklist.md 경로 확정 로직 삭제. EDGE CASES에서 stability·checklist 부재 분기 삭제
+- `references/session-cache.md` — CACHE_FIELDS에서 stability·checklist 관련 3필드 삭제
+- `references/invariant-guard.md` — BYPASS 3회 누적 처리를 인라인 보고 제안으로 변경
+- `scripts/validate.py` — REQUIRED_SPOKES에서 checklist-sync.md 제거 + pipeline.md 추가
+
+### 설계 원칙 변경
+- **단방향 선형:** 분기 없음. QC 실패 시 같은 턴 내 자동 보정 1회만 허용. 2회차 실패 = STOP
+- **파일 1개만 읽기:** UP_user-preferences_v*.md + (선택) UP_team_v*.md. 부가 파일 의존 전면 제거
+- **뺑뺑이 방지:** L레벨 분기·SCOPE_IMPACT·fast/full 선택·루프 복귀 경로 전부 제거
+
+### 하위호환
+- UP 본체 파일 구조 무변경 (Dual-block DSL 유지)
+- TEAM_SYNC 8단계 로직 무변경 (skip 조건만 명확화)
+- INVARIANT_GUARD 8축 유지 (#1~#8, 기존 ①~⑩ 흡수)
+- 기존 v2.4 참조자료는 `_archive/v2.4/`에서 참조 가능
+
+---
+
+
 ## v2.2 — 2026-04-21
 
 **계기:** 팀공유 UP(`UP_team_v*.md`) 자동 동기화 요구. 개인 UP 수정 시 공통 규칙만 팀에 전파, 개인 커스텀(호칭·고유명사·PERSONAL 마커)은 제외.
