@@ -1,3 +1,22 @@
+# up-manager Changelog
+
+## v3.0 (2026-04-28) — DSL_LANG = KR Single-block 전환 (MAJOR)
+
+**변경:**
+- INVARIANT #1·#2: 축명·키워드 한국어 마스터 (TRUTH→진실성, RULE→규칙 등)
+- INVARIANT #8: Dual-block(EN+KR) → Single-block(KR-only)
+- 헤더 `## DSL (EN)` 폐지, `## DSL (KR)` 단일화
+- references/dual-block-policy.md → single-block-policy.md 교체
+- references/dsl-lang-policy.md, dsl-glossary.md, invariant-guard.md 갱신
+
+**원인:** 형 명령(2026-04-28). EN-only 시스템 주입 vs LLM 한국어 컨텍스트 매칭 불일치 → 발동률 저하 의심. KR 마스터 전환으로 일관성·발동률 동시 확보.
+
+**마이그레이션:** 기존 UP_user-preferences_v*.md의 EN 블록 + 직후 `---` 구분선 삭제 → KR 블록만 잔존 → changelog 1줄 추가.
+
+**보존:** 파이프라인·INIT·팀싱크·세션캐시 100% 무변경.
+
+---
+
 # up-manager CHANGELOG
 
 ## v2.5 — 2026-04-23
