@@ -23,7 +23,7 @@
 
 - STEP 0: 볼트 마운트 확인 (실패 시 `request_cowork_directory`)
 - STEP 1: SESSION_CACHE.up_path 존재 시 ②로 직행
-- STEP 2: `Agent-Ops/UP_user-preferences_v*.md` + `UP_team_v*.md` 경로 확정 → 캐시 저장
+- STEP 2: `Agent-Ops/UP_user-preferences_*.md` + `UP_team_v*.md` 경로 확정 → 캐시 저장
 
 **제거 (v2.5):** `UP_stability.md`·`UP_checklist.md` 경로 탐색·캐싱 삭제. 파일 부재 경고도 발생하지 않음.
 
