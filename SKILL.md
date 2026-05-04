@@ -3,7 +3,7 @@ name: up-manager
 description: |
   UP 통합 관리 + 본질 보호 + 팀UP 자동 동기 + Single-block DSL(KR-only). 단방향 선형: INIT→IG→편집→QC→TEAM_SYNC→보고. 1턴 완결.
   P1: UP, UP수정, UP관리, 버전범프, 버전명체계, YYMMDD, 260503, user preferences, invariant guard, DSL_LANG, KR단일블록, single block, 한글DSL, 팀UP, team sync, PERSONAL_FILTER, CODEBLOCK_WRAP. P2: 수정해줘, update, 한글로 써줘. P3: version bump, single-block sync, date-based versioning.
-  NOT: 일반번역(→multilingual-translator), 프로젝트CLAUDE.md(→직접수행).
+  NOT: 일반번역(→translator-skill), 프로젝트CLAUDE.md(→직접수행).
 ---
 
 # up-manager v3.1 (260503 버전명 체계 신설)
