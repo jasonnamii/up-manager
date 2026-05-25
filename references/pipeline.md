@@ -7,7 +7,7 @@
 ## PIPE
 
 ```
-① INIT      → ② IG → ③ EDIT → ④ QC → ⑤ TEAM_SYNC → ⑥ REPORT
+① INIT → ② IG → ③ EDIT → ④ DUAL_SYNC → ⑤ QC → ⑥ TEAM_SYNC → ⑦ REPORT
   (캐시 스킵)    차단    병행    자동보정  자동         인라인
 ```
 
@@ -57,7 +57,15 @@ SEQUENCE (같은 턴 내 순차):
 
 ---
 
-## ④ QC — 검증 (2항목 + WRAP 게이트)
+## ④ DUAL_SYNC — 듀얼파일 동기 (260524~)
+
+- UP는 `_MBP`·`_MBA` 2판본. 본문 동일·볼트 경로만 머신별 차이.
+- ③ EDIT를 한 판본에 적용 → 경로 치환으로 다른 판본 생성.
+- 치환: `/Users/jason/ObsidianVault` ↔ `/Users/jason/Library/CloudStorage/Dropbox/ObsidianVault`, 헤더 `[MBP]`↔`[MBA]`.
+- 한쪽만 수정 = INVARIANT #10 FAIL. 쌍으로 commit.
+- 주의: 이 DUAL_SYNC(파일 2판본)는 구버전 EN/KR 블록 동기와 무관. v3.0~ DSL은 KR 단일블록.
+
+## ⑤ QC — 검증 (2항목 + WRAP 게이트 + 듀얼 경로 정합)
 
 ```
 CHECK (같은 턴 내 순차):
@@ -78,7 +86,7 @@ FAIL 처리:
 
 ---
 
-## ⑤ TEAM_SYNC — 팀 UP 동기
+## ⑥ TEAM_SYNC — 팀 UP 동기
 
 `→ references/team-sync.md` 참조.
 
@@ -97,7 +105,7 @@ STEP 1~8은 `team-sync.md` §PIPE 준수 (경로→diff→PERSONAL_FILTER→역�
 
 ---
 
-## ⑥ REPORT — 인라인 보고
+## ⑦ REPORT — 인라인 보고
 
 ```
 v{old} → v{new}
